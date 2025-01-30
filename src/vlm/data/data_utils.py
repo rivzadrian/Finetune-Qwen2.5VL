@@ -102,4 +102,3 @@ if __name__ == "__main__":
     data = load_dataset("priyank-m/chinese_text_recognition")
 
     result = DatasetHandler().merge_dataset([data["test"]], DataArguments)
-    breakpoint()
