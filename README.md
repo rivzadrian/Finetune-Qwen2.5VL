@@ -8,3 +8,7 @@ TBD
 ```python
 python src/train.py vlm_config.yaml 
 ```
+
+
+### Acknowledge
+This project is based on [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory/tree/main). Special thanks to the original authors and contributors!
