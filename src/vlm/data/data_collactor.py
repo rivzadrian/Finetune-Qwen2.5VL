@@ -2,43 +2,37 @@ import torch
 
 from dataclasses import dataclass
 from typing import Any, Dict, List
-from torchvision.transforms import ToTensor
 
 
-# Ref to whisper data_collactor
 @dataclass
-class DataCollatorForVisoinLanguageModel:
+class DataCollatorForQwenVL:
     processor: Any
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, torch.Tensor]:
-        # split inputs and labels since they have to be of different lengths and need different padding methods
-        # first treat the audio inputs by simply returning torch tensors
-        text = [batch["text"] for batch in features]
-        images = [batch["image"] for batch in features]
-        video = [batch["video"] for batch in features]
-
-        # input_features = [
-        #     {"input_features": feature["input_features"]} for feature in features
-        # ]
-        batch = self.processor.feature_extractor.pad(
-            input_features, return_tensors="pt"
+        text, image_inputs, video_inputs = zip(
+            *[
+                (
+                    self.processor.apply_chat_template(
+                        batch["text"], tokenize=False, add_generation_prompt=False
+                    ),
+                    batch["image_inputs"],
+                    batch["video_inputs"],
+                )
+                for batch in features
+            ]
         )
 
-        # get the tokenized label sequences
-        label_features = [{"input_ids": feature["labels"]} for feature in features]
-        # pad the labels to max length
-        labels_batch = self.processor.tokenizer.pad(label_features, return_tensors="pt")
-
-        # replace padding with -100 to ignore loss correctly
-        labels = labels_batch["input_ids"].masked_fill(
-            labels_batch.attention_mask.ne(1), -100
+        batch = self.processor(
+            text=text,
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
         )
 
-        # if bos token is appended in previous tokenization step,
-        # cut bos token here as it's append later anyways
-        if (labels[:, 0] == self.decoder_start_token_id).all().cpu().item():
-            labels = labels[:, 1:]
-
+        labels = batch["input_ids"].clone()
+        if self.processor.tokenizer.pad_token_id is not None:
+            labels[labels == self.processor.tokenizer.pad_token_id] = -100
         batch["labels"] = labels
 
         return batch

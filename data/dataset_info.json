@@ -1,0 +1,18 @@
+{
+    "llava_1k_zh": {
+        "hf_hub_url": "priyank-m/chinese_text_recognition",
+        "subset": "test",
+        "columns": {
+          "text": "text",
+          "image": "image"
+        }
+    },
+    "llava_2k_zh": {
+      "hf_hub_url": "priyank-m/chinese_text_recognition",
+      "subset": "test",
+      "columns": {
+        "text": "text",
+        "image": "image"
+      }
+  }
+}
