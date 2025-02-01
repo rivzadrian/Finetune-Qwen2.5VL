@@ -59,6 +59,7 @@ class DatasetHandler(BaseDatasetHandler):
         all_datasets: List[Union["Dataset", "IterableDataset", List[Any]]],
         dataset_columns: List[dict],
         data_args: "DataArguments",
+        seed: int,
         shuffle: bool = False,
     ) -> Union["Dataset", "IterableDataset"]:
         """
@@ -76,21 +77,21 @@ class DatasetHandler(BaseDatasetHandler):
                     "The samples between different datasets will not be mixed in streaming mode."
                 )
             return (
-                concatenate_datasets(all_datasets).shuffle(seed=data_args.seed)
+                concatenate_datasets(all_datasets).shuffle(seed=seed)
                 if shuffle
                 else concatenate_datasets(all_datasets)
             )
 
         elif data_args.mix_strategy.startswith("interleave"):
             if not data_args.streaming:
-                logger.warning_rank0_once(
+                logger.warning(
                     "We recommend using `mix_strategy=concat` in non-streaming mode."
                 )
 
             return interleave_datasets(
                 datasets=all_datasets,
                 probabilities=data_args.interleave_probs,
-                seed=data_args.seed,
+                seed=seed,
                 stopping_strategy=(
                     "first_exhausted"
                     if data_args.mix_strategy.endswith("under")
@@ -104,6 +105,7 @@ class DatasetHandler(BaseDatasetHandler):
         self,
         dataset: Union["Dataset", "IterableDataset"],
         data_args: "DataArguments",
+        seed: int,
     ) -> "DatasetDict":
         """
         Splits the dataset and returns a dataset dict containing train set and validation set.
@@ -111,9 +113,7 @@ class DatasetHandler(BaseDatasetHandler):
         Supports both map dataset and iterable dataset.
         """
         if data_args.streaming:
-            dataset = dataset.shuffle(
-                buffer_size=data_args.buffer_size, seed=data_args.seed
-            )
+            dataset = dataset.shuffle(buffer_size=data_args.buffer_size, seed=seed)
             val_set = dataset.take(int(data_args.val_size))
             train_set = dataset.skip(int(data_args.val_size))
             return DatasetDict({"train": train_set, "validation": val_set})
@@ -123,7 +123,7 @@ class DatasetHandler(BaseDatasetHandler):
                 if data_args.val_size > 1
                 else data_args.val_size
             )
-            dataset = dataset.train_test_split(test_size=val_size, seed=data_args.seed)
+            dataset = dataset.train_test_split(test_size=val_size, seed=seed)
             return DatasetDict(
                 {"train": dataset["train"], "validation": dataset["test"]}
             )

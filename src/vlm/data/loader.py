@@ -171,7 +171,9 @@ def _get_merged_dataset(
             _load_single_dataset(dataset_attr, model_args, data_args, training_args)
         )
         dataset_attr_columns.extend([dataset_attr.columns])
-    return DatasetHandler().merge_dataset(datasets, dataset_attr_columns, data_args)
+    return DatasetHandler().merge_dataset(
+        datasets, dataset_attr_columns, data_args, training_args.seed
+    )
 
 
 def _get_preprocessed_dataset(
@@ -241,9 +243,7 @@ def get_dataset(
     # Load tokenized dataset
     if data_args.tokenized_path is not None:
         if has_tokenized_data(data_args.tokenized_path):
-            logger.warning_rank0(
-                "Loading dataset from disk will ignore other data arguments."
-            )
+            logger.debug("Loading dataset from disk will ignore other data arguments.")
             tokenized_data: Union["Dataset", "DatasetDict"] = load_from_disk(
                 data_args.tokenized_path
             )
@@ -271,84 +271,86 @@ def get_dataset(
             raise ValueError("Turn off `streaming` when saving dataset to disk.")
 
     # Load and preprocess dataset
-    # with training_args.main_process_first(desc="load dataset"):
-    dataset = _get_merged_dataset(
-        data_args.dataset, model_args, data_args, training_args, stage
-    )
-    eval_dataset = _get_merged_dataset(
-        data_args.eval_dataset, model_args, data_args, training_args, stage
-    )
+    with training_args.main_process_first(desc="load dataset"):
+        dataset = _get_merged_dataset(
+            data_args.dataset, model_args, data_args, training_args, stage
+        )
+        eval_dataset = _get_merged_dataset(
+            data_args.eval_dataset, model_args, data_args, training_args, stage
+        )
 
-    # with training_args.main_process_first(desc="pre-process dataset"):
-    dataset = _get_preprocessed_dataset(
-        dataset,
-        # data_args,
-        # training_args,
-        # stage,
-        # tokenizer,
-        # processor,
-        # is_eval=False,
-    )
-    eval_dataset = _get_preprocessed_dataset(
-        eval_dataset,
-        # data_args,
-        # training_args,
-        # stage,
-        # tokenizer,
-        # processor,
-        # is_eval=True,
-    )
+    with training_args.main_process_first(desc="pre-process dataset"):
+        dataset = _get_preprocessed_dataset(
+            dataset,
+            # data_args,
+            # training_args,
+            # stage,
+            # tokenizer,
+            # processor,
+            # is_eval=False,
+        )
+        eval_dataset = _get_preprocessed_dataset(
+            eval_dataset,
+            # data_args,
+            # training_args,
+            # stage,
+            # tokenizer,
+            # processor,
+            # is_eval=True,
+        )
 
-    if data_args.val_size > 1e-6:
-        dataset_dict = DatasetHandler().split_dataset(dataset, data_args)
-    else:
-        dataset_dict = {}
-        if dataset is not None:
-            if data_args.streaming:
-                dataset = dataset.shuffle(
-                    buffer_size=data_args.buffer_size, seed=training_args.seed
-                )
-
-            dataset_dict["train"] = dataset
-
-        if eval_dataset is not None:
-            if data_args.streaming:
-                eval_dataset = eval_dataset.shuffle(
-                    buffer_size=data_args.buffer_size, seed=training_args.seed
-                )
-
-            dataset_dict["validation"] = eval_dataset
-
-        dataset_dict = DatasetDict(dataset_dict)
-
-    if data_args.tokenized_path is not None:
-        if training_args.should_save:
-            dataset_dict.save_to_disk(data_args.tokenized_path)
-            logger.info(f"Tokenized dataset saved at {data_args.tokenized_path}.")
-            logger.info(
-                f"Please restart the training with `tokenized_path: {data_args.tokenized_path}`."
+        if data_args.val_size > 1e-6:
+            dataset_dict = DatasetHandler().split_dataset(
+                dataset, data_args, training_args.seed
             )
+        else:
+            dataset_dict = {}
+            if dataset is not None:
+                if data_args.streaming:
+                    dataset = dataset.shuffle(
+                        buffer_size=data_args.buffer_size, seed=training_args.seed
+                    )
 
-        sys.exit(0)
+                dataset_dict["train"] = dataset
 
-    dataset_module = {}
-    if "train" in dataset_dict:
-        dataset_module["train_dataset"] = dataset_dict["train"]
+            if eval_dataset is not None:
+                if data_args.streaming:
+                    eval_dataset = eval_dataset.shuffle(
+                        buffer_size=data_args.buffer_size, seed=training_args.seed
+                    )
 
-    if "validation" in dataset_dict:
-        dataset_module["eval_dataset"] = dataset_dict["validation"]
-    return dataset_module
+                dataset_dict["validation"] = eval_dataset
+
+            dataset_dict = DatasetDict(dataset_dict)
+
+        if data_args.tokenized_path is not None:
+            if training_args.should_save:
+                dataset_dict.save_to_disk(data_args.tokenized_path)
+                logger.info(f"Tokenized dataset saved at {data_args.tokenized_path}.")
+                logger.info(
+                    f"Please restart the training with `tokenized_path: {data_args.tokenized_path}`."
+                )
+
+            sys.exit(0)
+
+        dataset_module = {}
+        if "train" in dataset_dict:
+            dataset_module["train_dataset"] = dataset_dict["train"]
+
+        if "validation" in dataset_dict:
+            dataset_module["eval_dataset"] = dataset_dict["validation"]
+        return dataset_module
 
 
-if __name__ == "__main__":
-    from src.vlm.hyparams.data_args import DataArguments
-    from src.vlm.hyparams.model_args import ModelArguments
-    from src.vlm.hyparams.training_args import TrainingArguments
-    from src.vlm.data.parser import DatasetAttr
+# if __name__ == "__main__":
+#     from src.vlm.hyparams.data_args import DataArguments
+#     from src.vlm.hyparams.model_args import ModelArguments
+#     from src.vlm.hyparams.training_args import TrainingArguments
+#     from src.vlm.data.parser import DatasetAttr
 
-    temp = get_dataset(
-        ModelArguments,
-        DataArguments(dataset="llava_2k_zh"),
-        TrainingArguments,
-    )
-    breakpoint()
+#     temp = get_dataset(
+#         ModelArguments,
+#         DataArguments(dataset="llava_2k_zh"),
+#         TrainingArguments(output_dir="temp"),
+#     )
+#     breakpoint()

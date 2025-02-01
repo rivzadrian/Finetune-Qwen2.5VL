@@ -19,16 +19,13 @@ from typing import Any, Dict, List
 
 from transformers.trainer import TRAINER_STATE_NAME
 
-from . import logging
+from .logger import logger
 from .packages import is_matplotlib_available
 
 
 if is_matplotlib_available():
     import matplotlib.figure
     import matplotlib.pyplot as plt
-
-
-logger = logging.get_logger(__name__)
 
 
 def smooth(scalars: List[float]) -> List[float]:
@@ -88,7 +85,7 @@ def plot_loss(save_dictionary: str, keys: List[str] = ["loss"]) -> None:
                 metrics.append(data["log_history"][i][key])
 
         if len(metrics) == 0:
-            logger.warning_rank0(f"No metric {key} to plot.")
+            logger.debug(f"No metric {key} to plot.")
             continue
 
         plt.figure()

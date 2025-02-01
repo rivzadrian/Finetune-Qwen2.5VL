@@ -55,7 +55,7 @@ class VLMPreprocessor:
         # image_inputs = []
         # video_inputs = []
         # video_sample_fps_list = []
-        # vision_infos = self.preprocess(vision_infos)
+        vision_infos = self.preprocess(vision_infos)
 
         def process_batch(examples):
             batch_size = len(examples["image"]) if "image" in examples else 0
@@ -65,13 +65,16 @@ class VLMPreprocessor:
             for i in range(batch_size):
                 if "image" in examples:
                     if hasattr(examples["image"][i], "mode"):  # PIL Image has mode attr
-                        image_inputs[i] = examples["image"][i]
+                        image_inputs[i] = fetch_image(
+                            {"image": examples["image"][i], "text": examples["text"][i]}
+                        )
                     else:
-                        image_inputs[i] = fetch_image(examples["image"][i])
+                        image_inputs[i] = examples["image"][i]
 
                 if "video" in examples and examples["video"][i] is not None:
-                    video_inputs[i] = fetch_video(examples["video"][i])
-
+                    video_inputs[i] = fetch_video(
+                        {"video": examples["video"][i], "text": examples["text"][i]}
+                    )
             return {"image_inputs": image_inputs, "video_inputs": video_inputs}
 
         # for vision_info in tqdm(vision_infos, desc="Process Vision Info"):
@@ -122,7 +125,6 @@ class VLMPreprocessor:
             process_batch,
             batched=True,
             batch_size=32,  # Adjust batch size based on available memory
-            remove_columns=vision_infos.column_names,
         )
 
         return vision_infos

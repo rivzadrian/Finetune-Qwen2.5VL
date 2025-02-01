@@ -30,18 +30,15 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.training_args import ParallelMode
 from transformers.utils import is_torch_bf16_gpu_available, is_torch_npu_available
 
-from ..extras import logging
-from ..extras.constants import CHECKPOINT_NAMES
-from ..extras.misc import check_dependencies, check_version, get_current_device
+from utils.logger import logger
+from utils.constants import CHECKPOINT_NAMES
+from utils.misc import check_dependencies, check_version, get_current_device
 from .data_args import DataArguments
 from .evaluation_args import EvaluationArguments
-from .finetuning_args import FinetuningArguments
+from .finetune_args import FinetuningArguments
 from .generating_args import GeneratingArguments
 from .model_args import ModelArguments
 from .training_args import RayArguments, TrainingArguments
-
-
-logger = logging.get_logger(__name__)
 
 check_dependencies()
 
@@ -153,7 +150,7 @@ def _verify_model_args(
             )
 
     if data_args.template == "yi" and model_args.use_fast_tokenizer:
-        logger.warning_rank0(
+        logger.debug(
             "We should use slow tokenizer for the Yi models. Change `use_fast_tokenizer` to False."
         )
         model_args.use_fast_tokenizer = False
@@ -239,8 +236,8 @@ def get_train_args(
         _set_transformers_logging()
 
     # Check arguments
-    if finetuning_args.stage != "pt" and data_args.template is None:
-        raise ValueError("Please specify which `template` to use.")
+    # if finetuning_args.stage != "pt" and data_args.template is None:
+    #     raise ValueError("Please specify which `template` to use.")
 
     if finetuning_args.stage != "sft":
         if training_args.predict_with_generate:
@@ -371,7 +368,7 @@ def get_train_args(
         raise ValueError("Unsloth is incompatible with DeepSpeed ZeRO-3.")
 
     if data_args.neat_packing and not data_args.packing:
-        logger.warning_rank0(
+        logger.debug(
             "`neat_packing` requires `packing` is True. Change `packing` to True."
         )
         data_args.packing = True
@@ -386,7 +383,7 @@ def get_train_args(
         and model_args.resize_vocab
         and finetuning_args.additional_target is None
     ):
-        logger.warning_rank0(
+        logger.debug(
             "Remember to add embedding layers to `additional_target` to make the added tokens trainable."
         )
 
@@ -395,31 +392,29 @@ def get_train_args(
         and model_args.quantization_bit is not None
         and (not model_args.upcast_layernorm)
     ):
-        logger.warning_rank0(
-            "We recommend enable `upcast_layernorm` in quantized training."
-        )
+        logger.debug("We recommend enable `upcast_layernorm` in quantized training.")
 
     if training_args.do_train and (not training_args.fp16) and (not training_args.bf16):
-        logger.warning_rank0("We recommend enable mixed precision training.")
+        logger.debug("We recommend enable mixed precision training.")
 
     if (
         training_args.do_train
         and (finetuning_args.use_galore or finetuning_args.use_apollo)
         and not finetuning_args.pure_bf16
     ):
-        logger.warning_rank0(
+        logger.debug(
             "Using GaLore or APOLLO with mixed precision training may significantly increases GPU memory usage."
         )
 
     if (not training_args.do_train) and model_args.quantization_bit is not None:
-        logger.warning_rank0("Evaluating model in 4/8-bit mode may cause lower scores.")
+        logger.debug("Evaluating model in 4/8-bit mode may cause lower scores.")
 
     if (
         (not training_args.do_train)
         and finetuning_args.stage == "dpo"
         and finetuning_args.ref_model is None
     ):
-        logger.warning_rank0("Specify `ref_model` for computing rewards at evaluation.")
+        logger.debug("Specify `ref_model` for computing rewards at evaluation.")
 
     # Post-process training arguments
     if (
@@ -427,7 +422,7 @@ def get_train_args(
         and training_args.ddp_find_unused_parameters is None
         and finetuning_args.finetuning_type == "lora"
     ):
-        logger.warning_rank0(
+        logger.debug(
             "`ddp_find_unused_parameters` needs to be set as False for LoRA in DDP training."
         )
         training_args.ddp_find_unused_parameters = False
@@ -438,7 +433,7 @@ def get_train_args(
     ]:
         can_resume_from_checkpoint = False
         if training_args.resume_from_checkpoint is not None:
-            logger.warning_rank0("Cannot resume from checkpoint in current stage.")
+            logger.debug("Cannot resume from checkpoint in current stage.")
             training_args.resume_from_checkpoint = None
     else:
         can_resume_from_checkpoint = True
@@ -461,19 +456,17 @@ def get_train_args(
 
         if last_checkpoint is not None:
             training_args.resume_from_checkpoint = last_checkpoint
-            logger.info_rank0(
+            logger.info(
                 f"Resuming training from {training_args.resume_from_checkpoint}."
             )
-            logger.info_rank0(
-                "Change `output_dir` or use `overwrite_output_dir` to avoid."
-            )
+            logger.info("Change `output_dir` or use `overwrite_output_dir` to avoid.")
 
     if (
         finetuning_args.stage in ["rm", "ppo"]
         and finetuning_args.finetuning_type == "lora"
         and training_args.resume_from_checkpoint is not None
     ):
-        logger.warning_rank0(
+        logger.debug(
             "Add {} to `adapter_name_or_path` to resume training from checkpoint.".format(
                 training_args.resume_from_checkpoint
             )

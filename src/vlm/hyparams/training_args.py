@@ -4,6 +4,7 @@ from typing import Literal, Optional, Union
 
 from transformers import Seq2SeqTrainingArguments
 from transformers.training_args import _convert_str_dict
+from trl import SFTConfig
 
 from utils.misc import use_ray
 
@@ -60,3 +61,24 @@ class TrainingArguments(RayArguments, Seq2SeqTrainingArguments):
     def __post_init__(self):
         Seq2SeqTrainingArguments.__post_init__(self)
         RayArguments.__post_init__(self)
+        # self.__dict__["sortish_sampler"] = None
+        # if hasattr(self, "sortish_sampler"):
+        #     delattr(self, "sortish_sampler")
+
+        # if "sortish_sampler" in self.__dict__:
+        #     del self.__dict__["sortish_sampler"]
+
+
+# class SFTTrainingArguments(SFTConfig):
+#     def __init__(self, **kwargs):
+#         valid_params = SFTConfig.__dataclass_fields__.keys()
+#         valid_kwargs = {k: v for k, v in kwargs.items() if k in valid_params}
+#         breakpoint()
+#         super().__init__(**valid_kwargs)
+
+#         for k, v in kwargs.items():
+#             if k not in valid_params and hasattr(self, k):
+#                 setattr(self, k, v)
+
+#     def __post_init__(self):
+#         SFTConfig.__post_init__(self)

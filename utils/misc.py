@@ -35,7 +35,9 @@ from transformers.utils.versions import require_version
 
 from utils.logger import logger
 from utils.packages import is_transformers_version_greater_than
+from dotenv import load_dotenv
 
+load_dotenv()
 
 _is_fp16_available = is_torch_npu_available() or is_torch_cuda_available()
 try:
@@ -81,7 +83,7 @@ def check_version(requirement: str, mandatory: bool = False) -> None:
         os.getenv("DISABLE_VERSION_CHECK", "0").lower() in ["true", "1"]
         and not mandatory
     ):
-        logger.warning_rank0_once(
+        logger.warning(
             "Version checking has been disabled, may lead to unexpected behaviors."
         )
         return
@@ -108,7 +110,7 @@ def check_dependencies() -> None:
     if is_transformers_version_greater_than(
         "4.46.0"
     ) and not is_transformers_version_greater_than("4.48.1"):
-        logger.warning_rank0_once(
+        logger.warning(
             "There are known bugs in transformers v4.46.0-v4.48.0, please use other versions."
         )
 

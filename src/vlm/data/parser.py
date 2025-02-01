@@ -36,7 +36,7 @@ class DatasetAttr:
     ranking: bool = False
     # extra configs
     subset: Optional[str] = None
-    split: str = "test"
+    split: str = "train"
     folder: Optional[str] = None
     num_samples: Optional[int] = None
     # common columns

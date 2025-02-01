@@ -151,10 +151,10 @@ class DataArguments:
             )
         },
     )
-    seed: Optional[int] = field(
-        default=42,
-        metadata={"help": "Seed"},
-    )
+    # seed: Optional[int] = field(
+    #     default=42,
+    #     metadata={"help": "Seed"},
+    # )
 
     def __post_init__(self):
         def split_arg(arg):
