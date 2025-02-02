@@ -7,17 +7,17 @@ TBD
 ### Quick Start 
 - SFT
 ```python
-python src/train.py vlm_config.yaml 
+python src/train.py config/vlm_config.yaml 
 ```
 
 - Merge LoRA
 ```python
-python src/merge_model.py vlm_merge_adapter_config.yaml 
+python src/merge_model.py config/vlm_merge_adapter_config.yaml 
 ```
 
 - Inference
 ```python
-python src/inference.py vlm_inference_config.yaml
+python src/inference.py config/vlm_inference_config.yaml
 ```
 
 

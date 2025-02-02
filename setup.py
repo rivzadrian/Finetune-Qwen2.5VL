@@ -4,6 +4,11 @@ import io
 import os
 from setuptools import find_packages, setup
 
+version_dict = {}
+with open("src/version.py") as f:
+    code = compile(f.read(), f.name, "exec")
+    exec(code, version_dict)
+
 
 def read(*paths, **kwargs):
     """Read the contents of a text file safely.
@@ -32,14 +37,26 @@ def read_requirements(path):
 
 setup(
     name="VlmFinetune",
-    # version=read("VlmFinetune", "VERSION"),
-    description="project_description",
-    # url="https://github.com/author_name/project_urlname/",
+    version=version_dict["version"],
+    description="A tool for fine-tuning Vision Language Model",
+    url="https://github.com/sandy1990418/Finetune-Qwen2.5-VL.git",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
-    author="sandy",
+    author="Sandy Chen",
+    python_requires=">=3.9",
     packages=find_packages(exclude=["tests", ".github"]),
     install_requires=read_requirements("requirements.txt"),
-    entry_points={"console_scripts": ["project_name = project_name.__main__:main"]},
+    # entry_points={"console_scripts": ["project_name = project_name.__main__:main"]},
+    license="Apache License 2.0",
+    classifiers=[  # 建議加入分類資訊
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+    ],
+    keywords="vlm, finetune, qwen, vision-language-model",
     # extras_require={"test": read_requirements("requirements-test.txt")},
 )
