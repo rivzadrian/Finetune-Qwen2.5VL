@@ -72,7 +72,6 @@ def read_args(
 ) -> Union[Dict[str, Any], List[str]]:
     if args is not None:
         return args
-
     if len(sys.argv) == 2 and (
         sys.argv[1].endswith(".yaml") or sys.argv[1].endswith(".yml")
     ):
@@ -509,8 +508,8 @@ def get_infer_args(
 
     _set_transformers_logging()
 
-    if data_args.template is None:
-        raise ValueError("Please specify which `template` to use.")
+    # if data_args.template is None:
+    #     raise ValueError("Please specify which `template` to use.")
 
     if model_args.infer_backend == "vllm":
         if finetuning_args.stage != "sft":

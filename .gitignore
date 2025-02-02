@@ -174,3 +174,7 @@ cython_debug/
 .pypirc
 
 *.pyc
+logs
+saves
+*.jpeg
+*.png
