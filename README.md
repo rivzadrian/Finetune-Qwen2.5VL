@@ -68,10 +68,18 @@ Run inference with your fine-tuned model:
 python src/inference.py config/vlm_inference_config.yaml
 ```
 
+### 4. Dockerfile
+```bash
+docker build --no-cache -t vlm_finetune:latest .
+docker run -it --name CONATINER_NAME -v LOCAL_PATH:/VLM vlm_finetune:latest
+```
+
 ## TODO
 - [ ] Resolve issues with Ray for multi-GPU training
 - [ ] Implement evaluation pipeline for fine-tuned models  
 - [ ] Add test cases for training, merging, and inference  
+- [ ] Load Data may be more flexible
+- [ ] Load Data support Image_url in Trainig stage
 
 
 ## Contributing

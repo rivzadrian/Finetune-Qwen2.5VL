@@ -14,5 +14,13 @@
         "text": "text",
         "image": "image"
       }
+  },
+  "text_recongnition_zh_test": {
+    "hf_hub_url": "priyank-m/text_recognition_en_zh",
+    "subset": "test",
+    "columns": {
+      "text": "text",
+      "image": "image"
+    }
   }
 }

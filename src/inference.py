@@ -16,12 +16,13 @@ class VLMConfig:
     model_args: Dict[str, Any]
     data_args: Dict[str, Any]
     finetuning_args: Dict[str, Any]
+    generating_args: Dict[str, Any]
 
     @classmethod
     def from_args(cls, args: Optional[Dict[str, Any]] = None) -> "VLMConfig":
         args = read_args(args)
-        model_args, data_args, finetuning_args, _ = get_infer_args(args)
-        return cls(model_args, data_args, finetuning_args)
+        model_args, data_args, finetuning_args, generating_args = get_infer_args(args)
+        return cls(model_args, data_args, finetuning_args, generating_args)
 
 
 class ImageLoader:
@@ -53,7 +54,7 @@ class ImageLoader:
             else:
                 return Image.open(source)
 
-        except (requests.RequestException, IOError) as e:
+        except (requests.RequestException, OSError) as e:
             raise ValueError(f"Failed to load image from {source}: {str(e)}")
 
 
@@ -66,7 +67,10 @@ class MessageBuilder:
                 "role": "user",
                 "content": [
                     {"type": "image", "image": image},
-                    {"type": "text", "text": "請列出圖片中的文字"},
+                    {
+                        "type": "text",
+                        "text": "請偵測圖片中的所有文字，並標記出它們的位置",
+                    },
                 ],
             }
         ]
@@ -104,7 +108,7 @@ class VLMInference:
 
     def generate(self, inputs: Dict[str, Any]) -> List[str]:
         """Generate output from processed inputs"""
-        generated_ids = self.model.generate(**inputs, max_new_tokens=128)
+        generated_ids = self.model.generate(**inputs, **self.config.generating_args)
         generated_ids_trimmed = [
             out_ids[len(in_ids) :]
             for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
@@ -122,7 +126,7 @@ class VLMInference:
         return self.generate(inputs)
 
 
-def main(args: Optional[Dict[str, Any]] = None) -> None:
+def main(image_file: str = "test.jpeg", args: Optional[Dict[str, Any]] = None) -> None:
     # Initialize configuration
     config = VLMConfig.from_args(args)
 
@@ -130,7 +134,7 @@ def main(args: Optional[Dict[str, Any]] = None) -> None:
     inference = VLMInference(config)
 
     # Load image - works with both URL and local path
-    image = ImageLoader.load("test.jpeg")
+    image = ImageLoader.load(image_file)
 
     # Run inference
     output = inference.infer(image)
