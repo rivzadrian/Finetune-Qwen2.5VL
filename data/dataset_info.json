@@ -1,10 +1,18 @@
 {
-    "text_recongnition": {
+    "text_recongnition_zh": {
         "hf_hub_url": "priyank-m/chinese_text_recognition",
         "subset": "train",
         "columns": {
           "text": "text",
           "image": "image"
         }
-    }
+    },
+    "text_recongnition_zh_en": {
+      "hf_hub_url": "priyank-m/text_recognition_en_zh",
+      "subset": "train",
+      "columns": {
+        "text": "text",
+        "image": "image"
+      }
+  }
 }

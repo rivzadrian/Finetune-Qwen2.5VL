@@ -17,7 +17,6 @@
 
 from typing import TYPE_CHECKING, List, Optional
 from src.vlm.data.loader import get_dataset
-from utils.constants import IGNORE_INDEX
 from utils.logger import logger
 from utils.misc import calculate_tps, get_logits_processor
 from utils.ploting import plot_loss
@@ -28,7 +27,7 @@ from .metric import ComputeAccuracy, ComputeSimilarity, eval_logit_processor
 # from trl import SFTTrainer
 from src.vlm.train.sft.trainer import CustomSeq2SeqTrainer
 from src.vlm.data.data_collactor import DataCollatorForQwenVL
-
+from accelerate import Accelerator
 
 if TYPE_CHECKING:
     from transformers import Seq2SeqTrainingArguments, TrainerCallback
@@ -81,6 +80,7 @@ def run_sft(
 
     # stf_config = SFTTrainingArguments(**training_args.__dict__)
     # breakpoint()
+
     trainer = CustomSeq2SeqTrainer(
         model=model,
         args=training_args,
@@ -91,6 +91,9 @@ def run_sft(
         **tokenizer_module,
         **metric_module,
     )
+    if finetuning_args.use_accelerate:
+        accelerator = Accelerator()
+        trainer = accelerator.prepare(trainer)
 
     # trainer = SFTTrainer(
     #     model=model,

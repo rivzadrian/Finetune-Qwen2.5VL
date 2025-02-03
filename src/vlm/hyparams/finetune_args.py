@@ -503,6 +503,10 @@ class FinetuningArguments(
         default=False,
         metadata={"help": "Whether or not to compute effective tokens per second."},
     )
+    use_accelerate: bool = field(
+        default=False,
+        metadata={"help": "Whether or not to use accelerate."},
+    )
 
     def __post_init__(self):
         def split_arg(arg):

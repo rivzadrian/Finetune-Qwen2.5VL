@@ -68,7 +68,7 @@ _EVAL_CLS = Tuple[
 
 
 def read_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> Union[Dict[str, Any], List[str]]:
     if args is not None:
         return args
@@ -195,36 +195,44 @@ def _check_extra_dependencies(
 
 
 def _parse_train_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> _TRAIN_CLS:
     parser = HfArgumentParser(_TRAIN_ARGS)
     return _parse_args(parser, args)
 
 
 def _parse_infer_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> _INFER_CLS:
     parser = HfArgumentParser(_INFER_ARGS)
     return _parse_args(parser, args)
 
 
 def _parse_eval_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> _EVAL_CLS:
     parser = HfArgumentParser(_EVAL_ARGS)
     return _parse_args(parser, args)
 
 
 def get_ray_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> RayArguments:
     parser = HfArgumentParser(RayArguments)
     (ray_args,) = _parse_args(parser, args, allow_extra_keys=True)
     return ray_args
 
 
+def get_finetune_args(
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
+) -> FinetuningArguments:
+    parser = HfArgumentParser(FinetuningArguments)
+    (finetune_args,) = _parse_args(parser, args, allow_extra_keys=True)
+    return finetune_args
+
+
 def get_train_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> _TRAIN_CLS:
     model_args, data_args, training_args, finetuning_args, generating_args = (
         _parse_train_args(args)
@@ -502,7 +510,7 @@ def get_train_args(
 
 
 def get_infer_args(
-    args: Optional[Union[Dict[str, Any], List[str]]] = None
+    args: Optional[Union[Dict[str, Any], List[str]]] = None,
 ) -> _INFER_CLS:
     model_args, data_args, finetuning_args, generating_args = _parse_infer_args(args)
 

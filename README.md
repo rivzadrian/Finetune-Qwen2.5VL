@@ -22,12 +22,16 @@ pip install -r requirements.txt
 
 ## Usage
 
-### 1. Supervised Fine-Tuning (SFT)
+### 1.1 Supervised Fine-Tuning (SFT) - Single GPU
 
 Run the following command to start the fine-tuning process:
 
 ```bash
 python src/train.py config/vlm_config.yaml
+
+or
+
+python main.py config/vlm_config.yaml
 ```
 
 The `vlm_config.yaml` should contain your training configurations such as:
@@ -35,6 +39,16 @@ The `vlm_config.yaml` should contain your training configurations such as:
 - Training hyperparameters
 - Dataset configurations
 - LoRA settings
+
+### 1.2 Supervised Fine-Tuning (SFT) - Multiple GPU
+
+Run the following command to start the fine-tuning process:
+
+```bash
+python main.py config/vlm_config.yaml config/accelerate.yaml
+```
+
+The `vlm_config.yaml` should contain your training configurations and  `accelerate.yaml` should contain accelerate configurations. If you want to use multiple GPUs, setting `use_accelerate: true` in `vlm_config.yaml`.
 
 ### 2. Merge LoRA Weights
 
@@ -60,5 +74,5 @@ python src/inference.py config/vlm_inference_config.yaml
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Acknowledge
+## Acknowledge
 This project is based on [LLaMA-Factory](https://github.com/hiyouga/LLaMA-Factory/tree/main). Special thanks to the original authors and contributors!
