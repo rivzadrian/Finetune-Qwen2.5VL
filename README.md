@@ -48,7 +48,9 @@ Run the following command to start the fine-tuning process:
 python main.py config/vlm_config.yaml config/accelerate.yaml
 ```
 
-The `vlm_config.yaml` should contain your training configurations and  `accelerate.yaml` should contain accelerate configurations. If you want to use multiple GPUs, setting `use_accelerate: true` in `vlm_config.yaml`.
+The `vlm_config.yaml` should contain your training configurations and  `accelerate.yaml` should contain `accelerate` configurations. If you want to use multiple GPUs, set `use_accelerate: true` in `vlm_config.yaml`.
+
+A better approach would be to use Ray, but I am currently facing some issues that have yet to be resolved. I plan to work on this further in the future.
 
 ### 2. Merge LoRA Weights
 
@@ -65,6 +67,12 @@ Run inference with your fine-tuned model:
 ```bash
 python src/inference.py config/vlm_inference_config.yaml
 ```
+
+## TODO
+- [ ] Resolve issues with Ray for multi-GPU training
+- [ ] Implement evaluation pipeline for fine-tuned models  
+- [ ] Add test cases for training, merging, and inference  
+
 
 ## Contributing
 

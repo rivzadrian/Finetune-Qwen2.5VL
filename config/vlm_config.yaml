@@ -40,3 +40,10 @@ use_accelerate: false
 # per_device_eval_batch_size: 1
 # eval_strategy: steps
 # eval_steps: 500
+
+### ray
+ray_run_name: qwen2.5-vl
+ray_num_workers: 1  # number of GPUs to use
+resources_per_worker:
+  GPU: 1
+placement_strategy: PACK

@@ -1,4 +1,4 @@
-git+https://github.com/huggingface/transformers 
+git+https://github.com/huggingface/transformers
 accelerate
 datasets>=2.16.0,<=3.1.0
 accelerate>=0.34.0,<=1.0.1
@@ -32,3 +32,4 @@ nltk
 rouge-chinese
 python-dotenv
 bitsandbytes>=0.39.0
+"ray[default]"
