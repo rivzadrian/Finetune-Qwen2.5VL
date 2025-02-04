@@ -2,9 +2,11 @@ import torch
 
 from dataclasses import dataclass
 from typing import Any, Dict, List
+from transformers import Qwen2_5_VLProcessor
 
 
 # https://github.com/zhangfaen/finetune-Qwen2-VL/blob/main/finetune.py
+# https://github.com/roboflow/notebooks/blob/main/notebooks/how-to-finetune-qwen2-5-vl-for-json-data-extraction.ipynb
 def create_message_template(batch):
     return [
         {
@@ -26,7 +28,7 @@ def create_message_template(batch):
     ]
 
 
-def find_assistant_content_sublist_indexes(l):
+def find_assistant_content_sublist_indexes(label):
     """
     A message from train_data/data.json may look like below:
         {
@@ -56,13 +58,13 @@ def find_assistant_content_sublist_indexes(l):
     end_indexes = []
 
     # Iterate through the list to find starting points
-    for i in range(len(l) - 2):
+    for i in range(len(label) - 2):
         # Check if the current and next elements form the start sequence
-        if l[i] == 151644 and l[i + 1] == 77091 and l[i + 2] == 198:
+        if label[i] == 151644 and label[i + 1] == 77091 and label[i + 2] == 198:
             start_indexes.append(i + 3)
             # Now look for the first 151645 and 198 after the start
-            for j in range(i + 3, len(l) - 1):
-                if l[j] == 151645 and l[j + 1] == 198:
+            for j in range(i + 3, len(label) - 1):
+                if label[j] == 151645 and label[j + 1] == 198:
                     end_indexes.append(j + 2)
                     # **NOTE** the <|im_end|>\n 2 tokens should be included in the label, so that model \can predicate end of output.
                     break  # Move to the next start after finding the end
@@ -105,16 +107,30 @@ class DataCollatorForQwenVL:
         #     labels[labels == self.processor.tokenizer.pad_token_id] = -100
         # batch["labels"] = labels
 
-        input_ids_lists = batch["input_ids"].clone().tolist()
+        labels_list = batch["input_ids"].clone()  # .tolist()
+        labels_list[labels_list == self.processor.tokenizer.pad_token_id] = -100
 
-        labels_list = []
-        for ids_list in input_ids_lists:
-            label_ids = [-100] * len(ids_list)
-            for begin_end_indexs in find_assistant_content_sublist_indexes(ids_list):
-                label_ids[begin_end_indexs[0] : begin_end_indexs[1]] = ids_list[
-                    begin_end_indexs[0] : begin_end_indexs[1]
-                ]
-            labels_list.append(label_ids)
+        if isinstance(self.processor, Qwen2_5_VLProcessor):
+            image_tokens = [151652, 151653, 151655]
+        else:
+            image_tokens = [
+                self.processor.tokenizer.convert_tokens_to_ids(
+                    self.processor.image_token
+                )
+            ]
+
+        # labels_list = []
+        # for ids_list in input_ids_lists:
+        # label_ids = [-100] * len(ids_list)
+        # for begin_end_indexs in find_assistant_content_sublist_indexes(
+        #     ids_list, image_tokens
+        # ):
+        #     label_ids[begin_end_indexs[0] : begin_end_indexs[1]] = ids_list[
+        #         begin_end_indexs[0] : begin_end_indexs[1]
+        #     ]
+        for image_token_id in image_tokens:
+            labels_list[labels_list == image_token_id] = -100
 
         batch["labels"] = torch.tensor(labels_list, dtype=torch.int64)
+
         return batch

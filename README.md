@@ -80,6 +80,7 @@ docker run -it --name CONATINER_NAME -v LOCAL_PATH:/VLM vlm_finetune:latest
 - [ ] Add test cases for training, merging, and inference  
 - [ ] Load Data may be more flexible
 - [ ] Load Data support Image_url in Trainig stage
+- [ ] Finetune JSON Dataset
 
 
 ## Contributing

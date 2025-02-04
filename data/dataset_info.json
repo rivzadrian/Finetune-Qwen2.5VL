@@ -16,7 +16,7 @@
       }
   },
   "text_recongnition_zh_test": {
-    "hf_hub_url": "priyank-m/text_recognition_en_zh",
+    "hf_hub_url": "priyank-m/chinese_text_recognition",
     "subset": "test",
     "columns": {
       "text": "text",
