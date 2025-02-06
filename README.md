@@ -68,7 +68,13 @@ Run inference with your fine-tuned model:
 python src/inference.py config/vlm_inference_config.yaml
 ```
 
-### 4. Dockerfile
+### 4. Evaluation
+```bash
+python evaluation/evaluation.py config/vlm_inference_config.yaml
+```
+
+
+### 5. Dockerfile
 ```bash
 docker build --no-cache -t vlm_finetune:latest .
 docker run -it --name CONATINER_NAME -v LOCAL_PATH:/VLM vlm_finetune:latest

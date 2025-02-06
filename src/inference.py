@@ -108,14 +108,20 @@ class VLMInference:
 
     def generate(self, inputs: Dict[str, Any]) -> List[str]:
         """Generate output from processed inputs"""
-        generated_ids = self.model.generate(**inputs, **self.config.generating_args)
+
+        skip_special_tokens_flag = self.config.generating_args.__dict__.pop(
+            "skip_special_tokens", False
+        )
+        generated_ids = self.model.generate(
+            **inputs, **self.config.generating_args.__dict__
+        )
         generated_ids_trimmed = [
             out_ids[len(in_ids) :]
             for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
         return self.processor.batch_decode(
             generated_ids_trimmed,
-            skip_special_tokens=True,
+            skip_special_tokens=skip_special_tokens_flag,
             clean_up_tokenization_spaces=False,
         )
 
