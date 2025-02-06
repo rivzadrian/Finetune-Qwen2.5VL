@@ -22,6 +22,10 @@ class OCREvaluator:
         pass
 
 
+if __name__ == "__main__":
+    evaluator = OCREvaluator()
+    data = evaluator.load_evaluation_dataset()
+
 # def evaluation(args: Optional[Dict[str, Any]] = None) -> float:
 #     # Initialize configuration
 #     config = VLMConfig.from_args(args)

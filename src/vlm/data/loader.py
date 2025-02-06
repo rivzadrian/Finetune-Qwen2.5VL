@@ -16,8 +16,6 @@ from src.vlm.data.parser import get_dataset_list
 if TYPE_CHECKING:
     from datasets import Dataset, IterableDataset
     from transformers import (
-        PreTrainedTokenizer,
-        ProcessorMixin,
         Seq2SeqTrainingArguments,
     )
 
@@ -41,7 +39,6 @@ def _load_single_dataset(
         data_path = dataset_attr.dataset_name
         data_name = dataset_attr.subset
         data_dir = dataset_attr.folder
-
     elif dataset_attr.load_from == "script":
         data_path = os.path.join(data_args.dataset_dir, dataset_attr.dataset_name)
         data_name = dataset_attr.subset
@@ -71,7 +68,6 @@ def _load_single_dataset(
             raise ValueError("File types should be identical.")
     else:
         raise NotImplementedError(f"Unknown load type: {dataset_attr.load_from}.")
-
     if dataset_attr.load_from == "ms_hub":
         check_version("modelscope>=1.11.0", mandatory=True)
         from modelscope import MsDataset  # type: ignore
@@ -110,9 +106,9 @@ def _load_single_dataset(
     else:
         dataset = load_dataset(
             path=data_path,
-            # name=data_name,
+            name=data_name,
             data_dir=data_dir,
-            # data_files=data_files,
+            data_files=data_files,
             split=dataset_attr.split,
             cache_dir=model_args.cache_dir,
             token=model_args.hf_hub_token,

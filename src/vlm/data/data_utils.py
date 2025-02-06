@@ -30,7 +30,7 @@ class DatasetHandler(BaseDatasetHandler):
         for new_col, old_col in dataset_columns.items():
             if new_col == old_col:
                 continue
-            dataset = dataset.rename_column(new_col, old_col)
+            dataset = dataset.rename_column(old_col, new_col)
 
         return dataset
 
