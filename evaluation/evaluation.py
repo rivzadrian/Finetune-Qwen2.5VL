@@ -5,20 +5,13 @@ from src.vlm.hyparams.training_args import TrainingArguments
 import re
 from evaluate import load
 from tqdm import tqdm
+from abc import ABC, abstractmethod
 
 
-class OCREvaluator:
+class BaseEvaluator(ABC):
     def __init__(self, args: Optional[Dict[str, Any]] = None):
-        r"""
-        \s* - 匹配零個或多個空白字元（包括空格、tab、換行等）
-        () 是捕獲組，代表我們要提取的部分
-        [^"] 代表匹配除了引號以外的任何字元
-        + 代表匹配一次或多次
-        """
         self.config = VLMConfig.from_args(args)
         self.inference = VLMInference(self.config)
-        self.pattern = r'"text_content":\s*"([^"]+)"'
-        self.cer = load("cer")
 
     def load_evaluation_dataset(self):
         data = _get_merged_dataset(
@@ -29,10 +22,37 @@ class OCREvaluator:
         )
         return data
 
+    @abstractmethod
+    def _inference(self, data):
+        pass
+
+    @abstractmethod
+    def evaluate(self):
+        pass
+
+
+class OCREvaluator(BaseEvaluator):
+    def __init__(self, args: Optional[Dict[str, Any]] = None):
+        r"""
+        \s* - 匹配零個或多個空白字元（包括空格、tab、換行等）
+        () 是捕獲組，代表我們要提取的部分
+        [^"] 代表匹配除了引號以外的任何字元
+        + 代表匹配一次或多次
+        """
+        super().__init__(args=args)
+        self.pattern = r'"text_content":\s*"([^"]+)"'
+        self.cer = load("cer")
+
     def _inference(self, data):
         for subdata in data:
             response = self.inference.infer(subdata["image"])
-            yield "".join(re.findall(self.pattern, response[0])), subdata["text"]
+            response = (
+                "".join(re.findall(self.pattern, response[0]))
+                if "text_context" in response[0]
+                else response[0]
+            )
+
+            yield response.replace("<|im_end|>", ""), subdata["text"]
 
     def evaluate(self):
         data = self.load_evaluation_dataset()
@@ -52,13 +72,4 @@ class OCREvaluator:
 if __name__ == "__main__":
     evaluator = OCREvaluator()
     score, pred_list, grond_truth_list = evaluator.evaluate()
-
-# def evaluation(args: Optional[Dict[str, Any]] = None) -> float:
-#     # Initialize configuration
-#     config = VLMConfig.from_args(args)
-
-#     # Initialize inference pipeline
-#     inference = VLMInference(config)
-
-# if __name__ == "__main__":
-#     evaluation()
+    print(score)
