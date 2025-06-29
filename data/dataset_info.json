@@ -1,19 +1,19 @@
 {
-    "text_recongnition_zh": {
-        "hf_hub_url": "priyank-m/chinese_text_recognition",
-        "split": "train",
-        "columns": {
-          "text": "text",
-          "image": "image"
-        }
-    },
-    "text_recongnition_zh_en": {
-      "hf_hub_url": "priyank-m/text_recognition_en_zh",
-      "split": "train",
-      "columns": {
-        "text": "text",
-        "image": "image"
-      }
+  "text_recongnition_zh": {
+    "hf_hub_url": "priyank-m/chinese_text_recognition",
+    "split": "train",
+    "columns": {
+      "text": "text",
+      "image": "image"
+    }
+  },
+  "text_recongnition_zh_en": {
+    "hf_hub_url": "priyank-m/text_recognition_en_zh",
+    "split": "train",
+    "columns": {
+      "text": "text",
+      "image": "image"
+    }
   },
   "text_recongnition_zh_test": {
     "hf_hub_url": "priyank-m/chinese_text_recognition",
@@ -23,13 +23,61 @@
       "image": "image"
     }
   },
-  "test_dataset":{
+  "test_dataset": {
     "hf_hub_url": "OleehyO/latex-formulas",
-    "subset":"cleaned_formulas",
-    "split":"train",
+    "subset": "cleaned_formulas",
+    "split": "train",
     "columns": {
       "text": "latex_formula",
       "image": "image"
+    }
+  },
+  "skin_flap_train_1_2": {
+    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_1_2",  
+    "split": "train",                                               
+    "columns": {            
+      "image": "image",     
+      "text":  "text"       
+    }
+  },
+  "skin_flap_test_0": {
+    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_0",
+    "split": "train",
+    "columns": {
+      "image": "image",
+      "text":  "text"        
+    }
+  },
+  "skin_flap_train_0_1": {
+    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_0_1",  
+    "split": "train",                                               
+    "columns": {            
+      "image": "image",     
+      "text":  "text"       
+    }
+  },
+  "skin_flap_test_2": {
+    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_2",
+    "split": "train",
+    "columns": {
+      "image": "image",
+      "text":  "text"        
+    }
+  },
+  "skin_flap_train_0_2": {
+    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_0_2",  
+    "split": "train",                                               
+    "columns": {            
+      "image": "image",     
+      "text":  "text"       
+    }
+  },
+  "skin_flap_test_1": {
+    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_1",
+    "split": "train",
+    "columns": {
+      "image": "image",
+      "text":  "text"        
     }
   }
 }
