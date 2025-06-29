@@ -13,7 +13,7 @@ lora_target: all
 ### dataset
 dataset: skin_flap_train_1_2  #, text_recongnition_zh_en
 eval_dataset: skin_flap_test_0  # ← **add** this line
-cutoff_len: 1024
+cutoff_len: 5392
 # max_samples: 1000
 overwrite_cache: true
 preprocessing_num_workers: 4
@@ -27,8 +27,8 @@ overwrite_output_dir: true
 seed: 3407
 
 ### train
-per_device_train_batch_size: 2
-gradient_accumulation_steps: 2
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
 learning_rate: 0.00005
 num_train_epochs: 5
 lr_scheduler_type: linear
@@ -36,11 +36,11 @@ optim: adamw_torch
 warmup_ratio: 0.1
 bf16: true
 ddp_timeout: 180000000
-use_accelerate: false
+use_accelerate: true
 
 ### eval
 # val_size: 0.1
-per_device_eval_batch_size: 2
+per_device_eval_batch_size: 1
 eval_strategy: steps
 eval_steps: 250
 
