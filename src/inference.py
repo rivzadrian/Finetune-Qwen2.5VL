@@ -4,6 +4,7 @@ from typing import Optional, Dict, Any, List, Union
 from PIL import Image
 import requests
 from io import BytesIO
+from datasets import load_dataset
 
 from src.vlm.model.loader import load_model, load_tokenizer
 from src.vlm.hyparams.parser import get_infer_args, read_args
@@ -75,6 +76,33 @@ class MessageBuilder:
             }
         ]
 
+    @staticmethod
+    def create_skin_flap_message(image: Image.Image) -> List[Dict[str, Any]]:
+        """Create a message template for skin flap classification task"""
+        return [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "image": image},
+                    {
+                        "type": "text",
+                        "text": (
+                            "Given the following image of a skin flap, classify it into one of these categories:\n"
+                            "0 - Viable skin\n"
+                            "1 - Skin with Venous Problems\n"
+                            "2 - Skin with Arterial Problems\n"
+                            "3 - Temporary Hypoperfused skin, yet viable\n"
+                            "4 - Necrotic skin\n"
+                            "5 - Scarred skin\n\n"
+                            "Format your response as:\n"
+                            "Classification: X\n"
+                            "Explanation: <explanation here>"
+                        ),
+                    },
+                ],
+            }
+        ]
+
 
 class VLMInference:
     def __init__(self, config: VLMConfig):
@@ -126,8 +154,8 @@ class VLMInference:
         )
 
     def infer(self, image: Image.Image) -> List[str]:
-        """Run complete inference pipeline"""
-        messages = MessageBuilder.create_ocr_message(image)
+        """Run complete inference pipeline for skin flap classification"""
+        messages = MessageBuilder.create_skin_flap_message(image)
         inputs = self.process_inputs(messages)
         return self.generate(inputs)
 
@@ -145,6 +173,10 @@ def main(image_file: str = "test.jpeg", args: Optional[Dict[str, Any]] = None) -
     # Run inference
     output = inference.infer(image)
     logger.info(f"The Inference result: {output}")
+
+    # Load test dataset for evaluation (optional)
+    test_dataset = load_dataset("rvzadrian/skin_flap_cropped_data_v2_fold_1", split="test")
+    logger.info(f"Loaded test dataset with {len(test_dataset)} samples.")
 
 
 if __name__ == "__main__":

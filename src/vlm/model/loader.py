@@ -88,6 +88,7 @@ def load_tokenizer(model_args: "ModelArguments") -> "TokenizerModule":
     Note: including inplace operation of model_args.
     """
     init_kwargs = _get_init_kwargs(model_args)
+    init_kwargs["cache_dir"] = model_args.cache_dir  # ✅ ensure cache_dir is included
     config = load_config(model_args)
     try:
         tokenizer = AutoTokenizer.from_pretrained(
