@@ -19,7 +19,7 @@ overwrite_cache: true
 preprocessing_num_workers: 4
 
 ### output
-output_dir: saves/skin_flap_qwen3b/lora/epoch3 
+output_dir: saves/skin_flap_fold_0/lora/epoch3 
 logging_steps: 1
 save_steps: 250
 plot_loss: true

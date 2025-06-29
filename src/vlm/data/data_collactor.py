@@ -13,7 +13,21 @@ def create_message_template(batch):
             "role": "user",
             "content": [
                 {"type": "image", "image": batch["image"]},
-                {"type": "text", "text": "請列出圖片中的文字"},
+                {
+                    "type": "text",
+                    "text": (
+                        "Given the following image of a skin flap, classify it into one of these categories:\n"
+                        "0 - Viable skin\n"
+                        "1 - Skin with Venous Problems\n"
+                        "2 - Skin with Arterial Problems\n"
+                        "3 - Temporary Hypoperfused skin, yet viable\n"
+                        "4 - Necrotic skin\n"
+                        "5 - Scarred skin\n\n"
+                        "Format your response as:\n"
+                        "Classification: X\n"
+                        "Explanation: <explanation here>"
+                    ),
+                },
             ],
         },
         {
@@ -26,7 +40,6 @@ def create_message_template(batch):
             ],
         },
     ]
-
 
 def find_assistant_content_sublist_indexes(label):
     """
@@ -132,5 +145,9 @@ class DataCollatorForQwenVL:
             labels_list[labels_list == image_token_id] = -100
 
         batch["labels"] = torch.tensor(labels_list, dtype=torch.int64)
+
+            # DEBUG: Print out the prompt for the first sample in this batch
+        sample_messages = create_message_template(batch[0])
+        print("🚨 DEBUG | Training prompt sample:", sample_messages)
 
         return batch
