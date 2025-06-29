@@ -22,6 +22,7 @@ import inspect
 from functools import WRAPPER_ASSIGNMENTS, partial, wraps
 from types import MethodType
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Tuple, Union
+import functools
 
 import torch
 
@@ -86,7 +87,14 @@ def get_custom_gradient_checkpointing_func(
     def custom_gradient_checkpointing_func(
         func: Callable, *args: Union["torch.Tensor", Any], **kwargs
     ):
-        module: "torch.nn.Module" = func.__self__
+        if isinstance(func, functools.partial):
+    # Extract the underlying function's __self__
+            if hasattr(func.func, "__self__"):
+                module = func.func.__self__
+            else:
+                raise AttributeError("Wrapped function does not have __self__ attribute.")
+        else:
+            module = func.__self__
 
         if any(param.requires_grad for param in module.parameters()):
             for arg in args:
