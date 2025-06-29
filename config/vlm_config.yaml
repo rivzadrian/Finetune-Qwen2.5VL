@@ -44,6 +44,8 @@ per_device_eval_batch_size: 2
 eval_strategy: steps
 eval_steps: 250
 
+cache_dir: cache
+
 # ### ray
 # ray_run_name: qwen2.5-vl
 # ray_num_workers: 1  # number of GPUs to use
