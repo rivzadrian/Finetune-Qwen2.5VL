@@ -31,6 +31,6 @@ nltk
 rouge-chinese
 python-dotenv
 bitsandbytes>=0.39.0
-"ray[default]"
+ray[default]
 evaluate
 jiwer
