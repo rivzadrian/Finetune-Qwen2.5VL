@@ -147,7 +147,7 @@ class DataCollatorForQwenVL:
         batch["labels"] = torch.tensor(labels_list, dtype=torch.int64)
 
             # DEBUG: Print out the prompt for the first sample in this batch
-        sample_messages = create_message_template(batch[0])
-        print("🚨 DEBUG | Training prompt sample:", sample_messages)
+        # sample_messages = create_message_template(batch[0])
+        # print("🚨 DEBUG | Training prompt sample:", sample_messages)
 
         return batch
