@@ -34,8 +34,3 @@ bitsandbytes>=0.39.0
 ray[default]
 evaluate
 jiwer
-# Core dependencies
-torch>=2.0.0
-transformers>=4.37.0
-peft>=0.7.0
-accelerate>=0.21.0
