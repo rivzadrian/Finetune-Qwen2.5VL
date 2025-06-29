@@ -1,6 +1,6 @@
 ### model
 model_name_or_path: Qwen/Qwen2.5-VL-7B-Instruct
-adapter_name_or_path: saves/Qwen2.5-VL-7B-Instruct/lora/sft-v2/checkpoint-11000
+adapter_name_or_path: saves/skin_flap_qwen3b/lora/epoch3/checkpoint-70
 trust_remote_code: true
 
 ### method
