@@ -33,7 +33,7 @@
     }
   },
   "skin_flap_train_1_2": {
-    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_1_2",  
+    "hf_hub_url": "rvzadrian/skin_flap_masked_data_v2_fold_1_2",  
     "split": "train",                                               
     "columns": {            
       "image": "image",     
@@ -41,7 +41,7 @@
     }
   },
   "skin_flap_test_0": {
-    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_0",
+    "hf_hub_url": "rvzadrian/skin_flap_masked_data_v2_fold_0",
     "split": "train",
     "columns": {
       "image": "image",
@@ -49,7 +49,7 @@
     }
   },
   "skin_flap_train_0_1": {
-    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_0_1",  
+    "hf_hub_url": "rvzadrian/skin_flap_masked_data_v2_fold_0_1",  
     "split": "train",                                               
     "columns": {            
       "image": "image",     
@@ -57,7 +57,7 @@
     }
   },
   "skin_flap_test_2": {
-    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_2",
+    "hf_hub_url": "rvzadrian/skin_flap_masked_data_v2_fold_2",
     "split": "train",
     "columns": {
       "image": "image",
@@ -65,7 +65,7 @@
     }
   },
   "skin_flap_train_0_2": {
-    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_0_2",  
+    "hf_hub_url": "rvzadrian/skin_flap_masked_data_v2_fold_0_2",  
     "split": "train",                                               
     "columns": {            
       "image": "image",     
@@ -73,7 +73,7 @@
     }
   },
   "skin_flap_test_1": {
-    "hf_hub_url": "rvzadrian/skin_flap_cropped_data_v2_fold_1",
+    "hf_hub_url": "rvzadrian/skin_flap_masked_data_v2_fold_1",
     "split": "train",
     "columns": {
       "image": "image",

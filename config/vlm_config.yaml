@@ -19,7 +19,7 @@ overwrite_cache: true
 preprocessing_num_workers: 4
 
 ### output
-output_dir: saves/skin_flap_fold_0/lora/epoch3 
+output_dir: saves/skin_flap_masked/lora
 logging_steps: 1
 save_steps: 250
 plot_loss: true
@@ -27,8 +27,8 @@ overwrite_output_dir: true
 seed: 3407
 
 ### train
-per_device_train_batch_size: 1
-gradient_accumulation_steps: 4
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 2
 learning_rate: 0.00005
 num_train_epochs: 5
 lr_scheduler_type: linear
